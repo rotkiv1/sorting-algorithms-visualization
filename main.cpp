@@ -18,6 +18,15 @@ class Vis {
 
             font.loadFromFile("font.ttf");
 
+            s.setPosition(410.f, 73.f);
+            s.setFillColor(sf::Color::Black);
+            s.setSize({0.f, 0.f});
+
+            sizeOfArray.setFont(font);
+            sizeOfArray.setCharacterSize(16.f);
+            sizeOfArray.setFillColor(sf::Color::Black);
+            sizeOfArray.setPosition(newArray.getLocalBounds().width + 408.f, 71.f);
+
             textGenerate.setFont(font);
             textGenerate.setCharacterSize(15);
             textGenerate.setPosition(25.f, 70.f);
@@ -44,23 +53,10 @@ class Vis {
             moving.setSize({80.f, 16.f});
             moving.setPosition(newArray.getLocalBounds().width + 260.f, 73.f);
 
-            for (auto i = 0; i < 110; i++) {
-                vec.push_back(std::make_unique<sf::RectangleShape>());
-            }
-
             textureBackground.loadFromFile("pas.png");
             background.setTexture(textureBackground);
             background.setScale(1, 0.1);
             background.setPosition(0.f, -115.f);
-
-            auto move = 0.f;
-            for (auto& rec : vec) {
-                rec->setSize({8.f, distribution(generator)});
-                rec->setPosition({50.f + move, 150.f});
-                rec->setScale(0.9, 0.9);
-                rec->setFillColor(sf::Color(102, 153, 255));
-                move += 9.f;
-            }
         }
 
         void run() {
@@ -91,6 +87,9 @@ class Vis {
                     case sf::Event::MouseButtonReleased:
                         handlePlayerInput(event.mouseButton.button, false);
                         break;
+                    case sf::Event::TextEntered:
+                        handleInput(event.key.code);
+                        break;
                     case sf::Event::Closed:
                         screen->close();
                         break;
@@ -98,20 +97,72 @@ class Vis {
             }
         }
 
+        void handleInput(sf::Keyboard::Key name) {
+            if (isClicked) {
+                if (name == 8) {
+                    if (!size.empty()) {
+                        size.pop_back();
+                        passed = true;
+                    }
+                } else {
+                    auto curr = static_cast<char>(name);
+                    if (curr >= '0' && curr <= '9') {
+                        size += curr;
+                        passed = true;
+                        if (size.size() >= 2 && std::stoi(size) >= 500) {
+                            passed = false;
+                            size.pop_back();
+                        }
+                    } else {
+                        passed = false;
+                    }
+                }
+                if (passed) {
+                    sizeOfArray.setString(size);
+                    s.setPosition(sizeOfArray.getLocalBounds().width + 410, 73.f);
+                    std::vector<std::unique_ptr<sf::RectangleShape>> temp;
+                    auto determine = (size.empty()) ? 0 : std::stoi(size);
+                    for (auto i = 0; i < determine; i++) {
+                        temp.push_back(std::make_unique<sf::RectangleShape>());
+                    }
+                    auto move = 0.f;
+                    for (auto& rec : temp) {
+                        rec->setSize({8.f, distribution(generator)});
+                        rec->setPosition({50.f + move, 150.f});
+                        rec->setScale(0.9, 0.9);
+                        rec->setFillColor(sf::Color(102, 153, 255));
+                        move += 9.f;
+                    }
+                    vec = std::move(temp);
+                }
+            } else {
+                s.setSize({0.f, 0.f});
+            }
+        }
+
         void handlePlayerInput(sf::Mouse::Button key, bool pressed) {
             sf::Vector2i position = sf::Mouse::getPosition(*screen);
             sf::Vector2f mousePosition = screen->mapPixelToCoords(position);
+            if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
+                mousePosition.x >= newArray.getLocalBounds().width + 260.f &&
+                mousePosition.x <= newArray.getLocalBounds().width + 360.f) {
+                isClicked = true;
+                s.setSize({1.5, 15.f});
+            } else {
+                s.setSize({0.f, 0.f});
+                isClicked = false;
+            }
             if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f) {
                 if (mousePosition.x >= 25.f && mousePosition.x <= 200.f &&
                     key == sf::Mouse::Left && pressed) {
                     for (auto& rec : vec) {
-                        rec->setSize({9.f, distribution(generator)});
+                        rec->setSize({8.f, distribution(generator)});
                         rec->setFillColor(sf::Color(102, 153, 255));
                     }
-                    std::cout << 5;
                 } else if (sorted && mousePosition.x >= 1480.f && mousePosition.x <= 1580.f) {
                     /* start sorting the array */
                     sorted = false;
+                    bubbleSort = true;
                     sorting.setColor(sf::Color::Red);
                     textGenerate.setColor(sf::Color::Red);
                 }
@@ -129,24 +180,36 @@ class Vis {
             if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
                 mousePosition.x >= 25.f && mousePosition.x <= 200.f) {
                 textGenerate.setColor(sf::Color(155, 155, 161));
+                cursor.loadFromSystem(sf::Cursor::Hand);
+                screen->setMouseCursor(cursor);
             } else if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
                 mousePosition.x >= 1480.f && mousePosition.x <= 1530.f) {
+                cursor.loadFromSystem(sf::Cursor::Hand);
+                screen->setMouseCursor(cursor);
                 sorting.setColor(sf::Color(155, 155, 161));
+            } else if (mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
+                       mousePosition.x >= newArray.getLocalBounds().width + 260.f &&
+                       mousePosition.x <= newArray.getLocalBounds().width + 360.f) {
+                cursor.loadFromSystem(sf::Cursor::Text);
+                screen->setMouseCursor(cursor);
             } else if (sorted) {
                 sorting.setFillColor(sf::Color::White);
                 textGenerate.setColor(sf::Color::White);
                 moving.setFillColor(sf::Color::White);
+                cursor.loadFromSystem(sf::Cursor::Arrow);
+                screen->setMouseCursor(cursor);
             }
-
         }
 
         void render() {
             screen->clear(sf::Color::White);
 
-            bubble_sort();
+            if (bubbleSort) {
+                bubble_sort();
+            }
 
             using namespace std::literals;
-            auto p = 0.0000001ms;
+            auto p = 0.000000001ms;
             std::this_thread::sleep_for(p);
 
             for (auto& rec : vec) {
@@ -159,12 +222,15 @@ class Vis {
             screen->draw(moving);
             screen->draw(s1);
             screen->draw(button);
+            screen->draw(sizeOfArray);
+            screen->draw(s);
             screen->display();
         }
 
         void bubble_sort() {
             if (!sorted && i >= vec.size() - 1 && j >= vec.size() - 1) {
                 sorted = true;
+                //isClicked = true;
                 for (auto& rec : vec) {
                     rec->setFillColor(sf::Color::Green);
                 }
@@ -197,8 +263,9 @@ class Vis {
 
 
         std::unique_ptr<sf::RenderWindow> screen;
-        sf::Time TimePerFrame = sf::seconds(1.f / 120.f);
         std::vector<std::unique_ptr<sf::RectangleShape>> vec;
+
+        sf::Time TimePerFrame = sf::seconds(1.f / 120.f);
         sf::Sprite background;
         sf::Texture textureBackground;
         sf::Font font;
@@ -206,12 +273,22 @@ class Vis {
         sf::RectangleShape s1, moving;
         sf::Cursor cursor;
         sf::CircleShape button;
+        sf::Text sizeOfArray;
+        sf::RectangleShape s;
+
+        std::string size;
+
         bool sorted = true;
         bool isPressed = false;
         bool was = false;
+        bool isClicked = false;
+        bool passed = false;
+        bool bubbleSort = false;
+
         int i = 0;
         int j = 0;
         int left = 0;
+        int count = 0;
 };
 
 
