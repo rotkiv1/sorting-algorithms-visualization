@@ -49,6 +49,12 @@ class Vis {
             s1.setSize({9.f, 100.f});
             s1.setPosition((textGenerate.getLocalBounds().width + 270.f) / 2, 0.f);
 
+            range.setFont(font);
+            range.setCharacterSize(15);
+            range.setFillColor(sf::Color::White);
+            range.setString("[100, 399]");
+            range.setPosition(newArray.getLocalBounds().width + 270, 90.f);
+
             moving.setFillColor(sf::Color::White);
             moving.setSize({80.f, 16.f});
             moving.setPosition(newArray.getLocalBounds().width + 260.f, 73.f);
@@ -109,7 +115,7 @@ class Vis {
                     if (curr >= '0' && curr <= '9') {
                         size += curr;
                         passed = true;
-                        if (size.size() >= 2 && std::stoi(size) >= 500) {
+                        if (size.size() >= 2 && std::stoi(size) >= 400) {
                             passed = false;
                             size.pop_back();
                         }
@@ -125,13 +131,31 @@ class Vis {
                     for (auto i = 0; i < determine; i++) {
                         temp.push_back(std::make_unique<sf::RectangleShape>());
                     }
+                    auto moveDistance = 9.f;
+                    auto recSize = 8.f;
                     auto move = 0.f;
+                    if (determine > 175 && determine < 220) {
+                        recSize = 6.f;
+                        moveDistance = 7.f;
+                    } else if (determine >= 220 && determine < 260) {
+                        recSize = 5.f;
+                        moveDistance = 6.f;
+                    } else if (determine >= 260 && determine < 300) {
+                        recSize = 4.f;
+                        moveDistance = 5.f;
+                    } else if (determine >= 300 && determine < 340) {
+                        recSize = 3.5;
+                        moveDistance = 4.5;
+                    } else if (determine >= 340 && determine < 400) {
+                        recSize = 2.5;
+                        moveDistance = 3.5;
+                    }
                     for (auto& rec : temp) {
-                        rec->setSize({8.f, distribution(generator)});
-                        rec->setPosition({800.f - determine * 9 / 2 + move, 150.f});
+                        rec->setSize({recSize, distribution(generator)});
+                        rec->setPosition({800.f - determine * moveDistance / 2 + move, 150.f});
                         rec->setScale(0.9, 0.9);
                         rec->setFillColor(sf::Color(102, 153, 255));
-                        move += 9.f;
+                        move += moveDistance;
                     }
                     vec = std::move(temp);
                 }
@@ -165,6 +189,7 @@ class Vis {
                     bubbleSort = true;
                     sorting.setColor(sf::Color::Red);
                     textGenerate.setColor(sf::Color::Red);
+                    sizeOfArray.setColor(sf::Color::Red);
                     cursor.loadFromSystem(sf::Cursor::Arrow);
                     screen->setMouseCursor(cursor);
                 }
@@ -198,6 +223,7 @@ class Vis {
                 sorting.setFillColor(sf::Color::White);
                 textGenerate.setColor(sf::Color::White);
                 moving.setFillColor(sf::Color::White);
+                sizeOfArray.setColor(sf::Color::Black);
                 cursor.loadFromSystem(sf::Cursor::Arrow);
                 screen->setMouseCursor(cursor);
             }
@@ -211,7 +237,7 @@ class Vis {
             }
 
             using namespace std::literals;
-            auto p = 0.001ms;
+            auto p = 0.00000008ms;
             std::this_thread::sleep_for(p);
 
             for (auto& rec : vec) {
@@ -226,6 +252,7 @@ class Vis {
             screen->draw(button);
             screen->draw(sizeOfArray);
             screen->draw(s);
+            screen->draw(range);
             screen->display();
         }
 
@@ -246,8 +273,8 @@ class Vis {
                 vec[j + 1]->setFillColor(sf::Color::Red);
                 if (vec[j + 1]->getSize().y < vec[j]->getSize().y) {
                     auto temp = vec[j]->getSize().y;
-                    vec[j]->setSize({9.f, vec[j + 1]->getSize().y});
-                    vec[j + 1]->setSize({9.f, temp});
+                    vec[j]->setSize({vec[j]->getSize().x, vec[j + 1]->getSize().y});
+                    vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
                     vec[j]->setFillColor(sf::Color::Green);                    vec[j + 1]->setFillColor(sf::Color::Green);
                 }
                 j++;
@@ -274,7 +301,7 @@ class Vis {
         sf::RectangleShape s1, moving;
         sf::Cursor cursor;
         sf::CircleShape button;
-        sf::Text sizeOfArray;
+        sf::Text sizeOfArray, range;
         sf::RectangleShape s;
 
         std::string size;
