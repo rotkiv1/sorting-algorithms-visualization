@@ -18,7 +18,7 @@ class Vis {
 
             font.loadFromFile("font.ttf");
 
-            s.setPosition(410.f, 73.f);
+            s.setPosition(410.f, 73.5);
             s.setFillColor(sf::Color::Black);
             s.setSize({0.f, 0.f});
 
@@ -119,7 +119,7 @@ class Vis {
                 }
                 if (passed) {
                     sizeOfArray.setString(size);
-                    s.setPosition(sizeOfArray.getLocalBounds().width + 410, 73.f);
+                    s.setPosition(sizeOfArray.getLocalBounds().width + 410, 73.5);
                     std::vector<std::unique_ptr<sf::RectangleShape>> temp;
                     auto determine = (size.empty()) ? 0 : std::stoi(size);
                     for (auto i = 0; i < determine; i++) {
@@ -128,7 +128,7 @@ class Vis {
                     auto move = 0.f;
                     for (auto& rec : temp) {
                         rec->setSize({8.f, distribution(generator)});
-                        rec->setPosition({50.f + move, 150.f});
+                        rec->setPosition({800.f - determine * 9 / 2 + move, 150.f});
                         rec->setScale(0.9, 0.9);
                         rec->setFillColor(sf::Color(102, 153, 255));
                         move += 9.f;
@@ -147,7 +147,7 @@ class Vis {
                 mousePosition.x >= newArray.getLocalBounds().width + 260.f &&
                 mousePosition.x <= newArray.getLocalBounds().width + 360.f) {
                 isClicked = true;
-                s.setSize({1.5, 15.f});
+                s.setSize({1.5, 14.f});
             } else {
                 s.setSize({0.f, 0.f});
                 isClicked = false;
@@ -165,6 +165,8 @@ class Vis {
                     bubbleSort = true;
                     sorting.setColor(sf::Color::Red);
                     textGenerate.setColor(sf::Color::Red);
+                    cursor.loadFromSystem(sf::Cursor::Arrow);
+                    screen->setMouseCursor(cursor);
                 }
             }
             if (sorted) {
@@ -209,7 +211,7 @@ class Vis {
             }
 
             using namespace std::literals;
-            auto p = 0.000000001ms;
+            auto p = 0.001ms;
             std::this_thread::sleep_for(p);
 
             for (auto& rec : vec) {
@@ -230,7 +232,6 @@ class Vis {
         void bubble_sort() {
             if (!sorted && i >= vec.size() - 1 && j >= vec.size() - 1) {
                 sorted = true;
-                //isClicked = true;
                 for (auto& rec : vec) {
                     rec->setFillColor(sf::Color::Green);
                 }
