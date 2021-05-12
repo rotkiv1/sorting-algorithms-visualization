@@ -4,6 +4,7 @@
 #include <chrono>
 #include <random>
 #include <thread>
+#include <memory>
 
 
 auto generator = std::default_random_engine(std::random_device()());
@@ -131,6 +132,8 @@ class Vis {
                     for (auto i = 0; i < determine; i++) {
                         temp.push_back(std::make_unique<sf::RectangleShape>());
                     }
+                    i = 0;
+                    j = 0;
                     auto moveDistance = 9.f;
                     auto move = 0.f;
                     if (determine > 175 && determine < 220) {
@@ -232,16 +235,17 @@ class Vis {
             screen->clear(sf::Color::White);
 
             if (bubbleSortNow) {
-                insertionSort();
+                bubbleSort();
             }
 
             using namespace std::literals;
-            auto p = 0.000000001ms;
+            auto p = 0.00000001ms;
             std::this_thread::sleep_for(p);
 
-            for (auto& rec : vec) {
-                screen->draw(*rec);
+            for (auto i = 0; i < vec.size(); i++) {
+                screen->draw(*vec[i]);
             }
+
             screen->draw(background);
             screen->draw(textGenerate);
             screen->draw(sorting);
@@ -276,6 +280,10 @@ class Vis {
                     auto temp = vec[j]->getSize().y;
                     vec[j]->setSize({vec[j]->getSize().x, vec[j + 1]->getSize().y});
                     vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
+                    //std::cout << vec[j]->getSize().y << ' ' << vec[j + 1]->getSize().y << '\n';
+                    //std::cout << '\n';
+                    //std::swap(vec[j]->getSize(), vec[j + 1]->getSize());
+                    //vec[j].swap(vec[j + 1]);
                     vec[j]->setFillColor(sf::Color::Green);                    vec[j + 1]->setFillColor(sf::Color::Green);
                 }
                 j++;
@@ -328,6 +336,53 @@ class Vis {
             }
         }
 
+        void heapify(int n, int i) {
+            auto largest = i;
+            auto l = 2 * i + 1;
+            auto r = 2 * i + 2;
+
+            if (l < n && vec[l]->getSize().y > vec[largest]->getSize().y) {
+                largest = l;
+            }
+
+            if (r < n && vec[r]->getSize().y > vec[largest]->getSize().y) {
+                largest = r;
+            }
+
+            if (largest != i) {
+                auto temp = vec[i]->getSize().y;
+                vec[i]->setSize({vec[i]->getSize().x, vec[largest]->getSize().y});
+                vec[largest]->setSize({vec[largest]->getSize().x, temp});
+                heapify(n, largest);
+            }
+        }
+
+        void heapSort() {
+            if (!sorted) {
+                if (i >= 0) {
+                    heapify(vec.size(), i);
+                    i--;
+                    //std::cout << 5;
+                } else {
+                    if (j >= 0) {
+                        std::cout << j << '\n';
+                        auto temp = vec[0]->getSize().y;
+                        vec[0]->setSize({vec[0]->getSize().x, vec[j]->getSize().y});
+                        vec[j]->setSize({vec[j]->getSize().x, temp});
+                        heapify(j, 0);
+                        j--;
+                    } else {
+                        sorted = true;
+                    }
+                }
+            }
+            if (sorted) {
+                for (auto& rec : vec) {
+                    //std::cout << rec->getSize().y << ' ';
+                }
+                //std::cout << '\n';
+            }
+        }
 
         std::unique_ptr<sf::RenderWindow> screen;
         std::vector<std::unique_ptr<sf::RectangleShape>> vec;
@@ -352,10 +407,17 @@ class Vis {
         bool passed = false;
         bool bubbleSortNow = false;
         bool insertionSortNow = false;
+        bool heapSortNow = false;
         bool in = true;
 
-        int i = 1;
-        int j = i - 1;
+        /*
+            bubble sort, i = 0, j = 0;
+            selection sort, i = 0, j = i - 1;
+            heap sort, i = v.size() / 2  - 1, j = v.size() - 1
+
+        */
+        int i;
+        int j;
         int left = 0;
         int count = 0;
         float recSize = 8.f;
