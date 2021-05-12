@@ -132,7 +132,6 @@ class Vis {
                         temp.push_back(std::make_unique<sf::RectangleShape>());
                     }
                     auto moveDistance = 9.f;
-                    auto recSize = 8.f;
                     auto move = 0.f;
                     if (determine > 175 && determine < 220) {
                         recSize = 6.f;
@@ -180,13 +179,13 @@ class Vis {
                 if (mousePosition.x >= 25.f && mousePosition.x <= 200.f &&
                     key == sf::Mouse::Left && pressed) {
                     for (auto& rec : vec) {
-                        rec->setSize({8.f, distribution(generator)});
+                        rec->setSize({recSize, distribution(generator)});
                         rec->setFillColor(sf::Color(102, 153, 255));
                     }
                 } else if (sorted && mousePosition.x >= 1480.f && mousePosition.x <= 1580.f) {
                     /* start sorting the array */
                     sorted = false;
-                    bubbleSort = true;
+                    bubbleSortNow = true;
                     sorting.setColor(sf::Color::Red);
                     textGenerate.setColor(sf::Color::Red);
                     sizeOfArray.setColor(sf::Color::Red);
@@ -232,12 +231,12 @@ class Vis {
         void render() {
             screen->clear(sf::Color::White);
 
-            if (bubbleSort) {
-                bubble_sort();
+            if (bubbleSortNow) {
+                insertionSort();
             }
 
             using namespace std::literals;
-            auto p = 0.00000008ms;
+            auto p = 0.000000001ms;
             std::this_thread::sleep_for(p);
 
             for (auto& rec : vec) {
@@ -256,18 +255,20 @@ class Vis {
             screen->display();
         }
 
-        void bubble_sort() {
+        void bubbleSort() {
             if (!sorted && i >= vec.size() - 1 && j >= vec.size() - 1) {
                 sorted = true;
                 for (auto& rec : vec) {
                     rec->setFillColor(sf::Color::Green);
                 }
             }
+
             if (!sorted) {
                 for (auto k = 0; k < vec.size() - left; k++) {
                     vec[k]->setFillColor(sf::Color(102, 153, 255));
                 }
             }
+
             if (!sorted) {
                 vec[j]->setFillColor(sf::Color::Red);
                 vec[j + 1]->setFillColor(sf::Color::Red);
@@ -285,6 +286,44 @@ class Vis {
                     j = 0;
                     i++;
                     left++;
+                }
+            }
+        }
+
+        void insertionSort() {
+            if (!sorted && i >= vec.size()) {
+                sorted = true;
+                for (auto& rec : vec) {
+                    rec->setFillColor(sf::Color::Green);
+                }
+            }
+
+            if (!sorted) {
+                for (auto k = left; k < vec.size(); k++) {
+                    vec[k]->setFillColor(sf::Color(102, 153, 255));
+                }
+            }
+
+            if (!sorted) {
+                if (a == 1) {
+                     keyY = vec[i]->getSize().y;
+                }
+                a++;
+                if (j >= 0 && vec[j]->getSize().y > keyY) {
+                    auto temp = vec[j]->getSize().y;
+                    vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
+                    j--;
+                } else {
+                    vec[j + 1]->setSize({vec[i]->getSize().x, keyY});
+                    i++;
+                    if (i < vec.size()) {
+                        keyY = vec[i]->getSize().y;
+                    }
+                    j = i - 1;
+                    left++;
+                    for (auto k = 0; k < left; k++) {
+                        vec[k]->setFillColor(sf::Color(204, 153, 255));
+                    }
                 }
             }
         }
@@ -311,12 +350,17 @@ class Vis {
         bool was = false;
         bool isClicked = false;
         bool passed = false;
-        bool bubbleSort = false;
+        bool bubbleSortNow = false;
+        bool insertionSortNow = false;
+        bool in = true;
 
-        int i = 0;
-        int j = 0;
+        int i = 1;
+        int j = i - 1;
         int left = 0;
         int count = 0;
+        float recSize = 8.f;
+        int a = 1;
+        int keyY;
 };
 
 
