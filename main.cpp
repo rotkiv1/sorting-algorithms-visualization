@@ -19,14 +19,14 @@ class Vis {
 
             font.loadFromFile("font.ttf");
 
-            s.setPosition(410.f, 73.5);
+            s.setPosition(460.f, 73.5);
             s.setFillColor(sf::Color::Black);
             s.setSize({0.f, 0.f});
 
             sizeOfArray.setFont(font);
             sizeOfArray.setCharacterSize(16.f);
             sizeOfArray.setFillColor(sf::Color::Black);
-            sizeOfArray.setPosition(newArray.getLocalBounds().width + 408.f, 71.f);
+            sizeOfArray.setPosition(newArray.getLocalBounds().width + 458.f, 71.f);
 
             textGenerate.setFont(font);
             textGenerate.setCharacterSize(15);
@@ -36,9 +36,27 @@ class Vis {
 
             newArray.setFont(font);
             newArray.setCharacterSize(15);
-            newArray.setPosition(250.f, 70.f);
+            newArray.setPosition(300.f, 70.f);
             newArray.setFillColor(sf::Color::White);
             newArray.setString("Change  array  size  ");
+
+            bubbleSortText.setFont(font);
+            bubbleSortText.setCharacterSize(15);
+            bubbleSortText.setFillColor(sf::Color::White);
+            bubbleSortText.setString("Bubble  sort");
+            bubbleSortText.setPosition(700.f, 70.f);
+
+            insertionSortText.setFont(font);
+            insertionSortText.setCharacterSize(15);
+            insertionSortText.setFillColor(sf::Color::White);
+            insertionSortText.setString("Insertion  sort");
+            insertionSortText.setPosition(850.f, 70.f);
+
+            heapSortText.setFont(font);
+            heapSortText.setCharacterSize(15);
+            heapSortText.setFillColor(sf::Color::White);
+            heapSortText.setString("Heap  sort");
+            heapSortText.setPosition(1025.f, 70.f);
 
             sorting.setFont(font);
             sorting.setCharacterSize(15);
@@ -46,7 +64,7 @@ class Vis {
             sorting.setFillColor(sf::Color::White);
             sorting.setString("Sort");
 
-            s1.setFillColor(sf::Color::Black);
+            s1.setFillColor(sf::Color(102, 157, 178));
             s1.setSize({9.f, 100.f});
             s1.setPosition((textGenerate.getLocalBounds().width + 270.f) / 2, 0.f);
 
@@ -54,16 +72,16 @@ class Vis {
             range.setCharacterSize(15);
             range.setFillColor(sf::Color::White);
             range.setString("[100, 399]");
-            range.setPosition(newArray.getLocalBounds().width + 270, 90.f);
+            range.setPosition(newArray.getLocalBounds().width + 320.f, 90.f);
 
             moving.setFillColor(sf::Color::White);
             moving.setSize({80.f, 16.f});
-            moving.setPosition(newArray.getLocalBounds().width + 260.f, 73.f);
+            moving.setPosition(newArray.getLocalBounds().width + 310.f, 73.f);
 
             textureBackground.loadFromFile("pas.png");
             background.setTexture(textureBackground);
-            background.setScale(1, 0.1);
-            background.setPosition(0.f, -115.f);
+            background.setScale(11, 1);
+            background.setPosition(0.f, -275.f);
         }
 
         void run() {
@@ -107,9 +125,12 @@ class Vis {
         void handleInput(sf::Keyboard::Key name) {
             if (isClicked) {
                 if (name == 8) {
+                        std::cout << size.back() << ' ';
+
                     if (!size.empty()) {
                         size.pop_back();
                         passed = true;
+                        std::cout << size << '\n';
                     }
                 } else {
                     auto curr = static_cast<char>(name);
@@ -126,14 +147,14 @@ class Vis {
                 }
                 if (passed) {
                     sizeOfArray.setString(size);
-                    s.setPosition(sizeOfArray.getLocalBounds().width + 410, 73.5);
+                    s.setPosition(sizeOfArray.getLocalBounds().width + 460.f, 73.5);
                     std::vector<std::unique_ptr<sf::RectangleShape>> temp;
                     auto determine = (size.empty()) ? 0 : std::stoi(size);
                     for (auto i = 0; i < determine; i++) {
                         temp.push_back(std::make_unique<sf::RectangleShape>());
                     }
-                    i = 0;
-                    j = 0;
+                    i = determine / 2 - 1;
+                    j = determine - 1;
                     auto moveDistance = 9.f;
                     auto move = 0.f;
                     if (determine > 175 && determine < 220) {
@@ -151,12 +172,15 @@ class Vis {
                     } else if (determine >= 340 && determine < 400) {
                         recSize = 2.5;
                         moveDistance = 3.5;
+                    } else if (determine > 0 && determine <= 175) {
+                        recSize = 8.f;
+                        moveDistance = 9.f;
                     }
                     for (auto& rec : temp) {
                         rec->setSize({recSize, distribution(generator)});
                         rec->setPosition({800.f - determine * moveDistance / 2 + move, 150.f});
                         rec->setScale(0.9, 0.9);
-                        rec->setFillColor(sf::Color(102, 153, 255));
+                        rec->setFillColor(sf::Color(102, 157, 178));
                         move += moveDistance;
                     }
                     vec = std::move(temp);
@@ -170,8 +194,8 @@ class Vis {
             sf::Vector2i position = sf::Mouse::getPosition(*screen);
             sf::Vector2f mousePosition = screen->mapPixelToCoords(position);
             if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
-                mousePosition.x >= newArray.getLocalBounds().width + 260.f &&
-                mousePosition.x <= newArray.getLocalBounds().width + 360.f) {
+                mousePosition.x >= newArray.getLocalBounds().width + 310.f &&
+                mousePosition.x <= newArray.getLocalBounds().width + 410.f) {
                 isClicked = true;
                 s.setSize({1.5, 14.f});
             } else {
@@ -183,23 +207,23 @@ class Vis {
                     key == sf::Mouse::Left && pressed) {
                     for (auto& rec : vec) {
                         rec->setSize({recSize, distribution(generator)});
-                        rec->setFillColor(sf::Color(102, 153, 255));
+                        rec->setFillColor(sf::Color(102, 157, 178));
                     }
                 } else if (sorted && mousePosition.x >= 1480.f && mousePosition.x <= 1580.f) {
                     /* start sorting the array */
                     sorted = false;
-                    bubbleSortNow = true;
-                    sorting.setColor(sf::Color::Red);
-                    textGenerate.setColor(sf::Color::Red);
-                    sizeOfArray.setColor(sf::Color::Red);
+                    heapSortNow = true;
+                    sorting.setColor(sf::Color(255, 79, 89));
+                    textGenerate.setColor(sf::Color(255, 79, 89));
+                    sizeOfArray.setColor(sf::Color(255, 79, 89));
                     cursor.loadFromSystem(sf::Cursor::Arrow);
                     screen->setMouseCursor(cursor);
                 }
             }
             if (sorted) {
                 left = 0;
-                i = 0;
-                j = 0;
+                i = vec.size() / 2 - 1;
+                j = vec.size() - 1;
             }
         }
 
@@ -208,17 +232,17 @@ class Vis {
             sf::Vector2f mousePosition = screen->mapPixelToCoords(position);
             if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
                 mousePosition.x >= 25.f && mousePosition.x <= 200.f) {
-                textGenerate.setColor(sf::Color(155, 155, 161));
+                textGenerate.setColor(sf::Color(97, 251, 100));
                 cursor.loadFromSystem(sf::Cursor::Hand);
                 screen->setMouseCursor(cursor);
             } else if (sorted && mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
                 mousePosition.x >= 1480.f && mousePosition.x <= 1530.f) {
                 cursor.loadFromSystem(sf::Cursor::Hand);
                 screen->setMouseCursor(cursor);
-                sorting.setColor(sf::Color(155, 155, 161));
+                sorting.setColor(sf::Color(97, 251, 100));
             } else if (mousePosition.y >= 70.f && mousePosition.y <= 100.f &&
-                       mousePosition.x >= newArray.getLocalBounds().width + 260.f &&
-                       mousePosition.x <= newArray.getLocalBounds().width + 360.f) {
+                       mousePosition.x >= newArray.getLocalBounds().width + 310.f &&
+                       mousePosition.x <= newArray.getLocalBounds().width + 410.f) {
                 cursor.loadFromSystem(sf::Cursor::Text);
                 screen->setMouseCursor(cursor);
             } else if (sorted) {
@@ -234,12 +258,12 @@ class Vis {
         void render() {
             screen->clear(sf::Color::White);
 
-            if (bubbleSortNow) {
-                bubbleSort();
+            if (heapSortNow) {
+                heapSort();
             }
 
             using namespace std::literals;
-            auto p = 0.00000001ms;
+            auto p = 0.000001ms;
             std::this_thread::sleep_for(p);
 
             for (auto i = 0; i < vec.size(); i++) {
@@ -251,11 +275,14 @@ class Vis {
             screen->draw(sorting);
             screen->draw(newArray);
             screen->draw(moving);
-            screen->draw(s1);
+            //screen->draw(s1);
             screen->draw(button);
             screen->draw(sizeOfArray);
             screen->draw(s);
             screen->draw(range);
+            screen->draw(bubbleSortText);
+            screen->draw(insertionSortText);
+            screen->draw(heapSortText);
             screen->display();
         }
 
@@ -269,7 +296,7 @@ class Vis {
 
             if (!sorted) {
                 for (auto k = 0; k < vec.size() - left; k++) {
-                    vec[k]->setFillColor(sf::Color(102, 153, 255));
+                    vec[k]->setFillColor(sf::Color(102, 157, 178));
                 }
             }
 
@@ -280,10 +307,6 @@ class Vis {
                     auto temp = vec[j]->getSize().y;
                     vec[j]->setSize({vec[j]->getSize().x, vec[j + 1]->getSize().y});
                     vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
-                    //std::cout << vec[j]->getSize().y << ' ' << vec[j + 1]->getSize().y << '\n';
-                    //std::cout << '\n';
-                    //std::swap(vec[j]->getSize(), vec[j + 1]->getSize());
-                    //vec[j].swap(vec[j + 1]);
                     vec[j]->setFillColor(sf::Color::Green);                    vec[j + 1]->setFillColor(sf::Color::Green);
                 }
                 j++;
@@ -308,7 +331,7 @@ class Vis {
 
             if (!sorted) {
                 for (auto k = left; k < vec.size(); k++) {
-                    vec[k]->setFillColor(sf::Color(102, 153, 255));
+                    vec[k]->setFillColor(sf::Color(102, 157, 178));
                 }
             }
 
@@ -345,10 +368,16 @@ class Vis {
                 largest = l;
             }
 
+            for (auto& rec : vec) {
+                rec->setFillColor(sf::Color(102, 157, 178));
+            }
+
             if (r < n && vec[r]->getSize().y > vec[largest]->getSize().y) {
                 largest = r;
             }
 
+            vec[i]->setFillColor(sf::Color::Red);
+            vec[largest]->setFillColor(sf::Color::Red);
             if (largest != i) {
                 auto temp = vec[i]->getSize().y;
                 vec[i]->setSize({vec[i]->getSize().x, vec[largest]->getSize().y});
@@ -361,16 +390,19 @@ class Vis {
             if (!sorted) {
                 if (i >= 0) {
                     heapify(vec.size(), i);
+
                     i--;
-                    //std::cout << 5;
                 } else {
                     if (j >= 0) {
-                        std::cout << j << '\n';
                         auto temp = vec[0]->getSize().y;
                         vec[0]->setSize({vec[0]->getSize().x, vec[j]->getSize().y});
                         vec[j]->setSize({vec[j]->getSize().x, temp});
                         heapify(j, 0);
+                        for (auto k = vec.size() - left - 1; k < vec.size(); k++) {
+                            vec[k]->setFillColor(sf::Color(204, 153, 255));
+                        }
                         j--;
+                        left++;
                     } else {
                         sorted = true;
                     }
@@ -378,9 +410,9 @@ class Vis {
             }
             if (sorted) {
                 for (auto& rec : vec) {
-                    //std::cout << rec->getSize().y << ' ';
+                    rec->setFillColor(sf::Color::Green);
                 }
-                //std::cout << '\n';
+                heapSortNow = false;
             }
         }
 
@@ -391,7 +423,8 @@ class Vis {
         sf::Sprite background;
         sf::Texture textureBackground;
         sf::Font font;
-        sf::Text textGenerate, sorting, newArray;
+        sf::Text textGenerate, sorting, newArray, bubbleSortText,
+                 insertionSortText, heapSortText;
         sf::RectangleShape s1, moving;
         sf::Cursor cursor;
         sf::CircleShape button;
