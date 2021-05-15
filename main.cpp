@@ -167,8 +167,8 @@ class Vis {
                         recSize = 4.f;
                         moveDistance = 5.f;
                     } else if (determine >= 300 && determine < 340) {
-                        recSize = 3.5;
-                        moveDistance = 4.5;
+                        recSize = 3;
+                        moveDistance = 4;
                     } else if (determine >= 340 && determine < 400) {
                         recSize = 2.5;
                         moveDistance = 3.5;
@@ -241,8 +241,8 @@ class Vis {
                     insertionSortText.setColor(sf::Color(97, 251, 100));
                     bubbleSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color::White);
-                    i = 0;
-                    j = 0;
+                    //i = 0;
+                    //j = 0;
                     bubbleSortNow = false;
                     insertionSortNow = true;
                     heapSortNow = false;
@@ -251,8 +251,8 @@ class Vis {
                     insertionSortText.setColor(sf::Color::White);
                     bubbleSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color(97, 251, 100));
-                    i = vec.size() / 2 - 1;
-                    j = vec.size() - 1;
+                    //i = vec.size() / 2 - 1;
+                    //j = vec.size() - 1;
                     bubbleSortNow = false;
                     insertionSortNow = false;
                     heapSortNow = true;
@@ -322,20 +322,24 @@ class Vis {
                     heapSort();
                 } else if (bubbleSortNow) {
                     bubbleSort();
+                    bubbleSortNow = false;
+                    sorted = true;
                 } else if (insertionSortNow) {
-                    //insertionSort();
-                    std::cout << vec.size() << '\n';
-                    qs(0, vec.size() - 1);
+                    q(0, vec.size() - 1);
+                    insertionSortNow = false;
+                    sorted = true;
                 }
             }
 
-            using namespace std::literals;
-            auto p = 0.0000000001ms;
-            std::this_thread::sleep_for(p);
+
 
             for (auto i = 0; i < vec.size(); i++) {
                 screen->draw(*vec[i]);
             }
+
+            using namespace std::literals;
+            //auto p = 0.0000000001ms;
+            //std::this_thread::sleep_for(p);
 
             screen->draw(background);
             screen->draw(textGenerate);
@@ -352,38 +356,50 @@ class Vis {
             screen->display();
         }
 
+        void updateFront() {
+            for (auto i = 0; i < vec.size(); i++) {
+                screen->draw(*vec[i]);
+            }
+            using namespace std::literals;
+            auto p = 0.000000001ms;
+            std::this_thread::sleep_for(p);
+            screen->draw(background);
+            screen->draw(textGenerate);
+            screen->draw(sorting);
+            screen->draw(newArray);
+            screen->draw(moving);
+            screen->draw(button);
+            screen->draw(sizeOfArray);
+            screen->draw(s);
+            screen->draw(range);
+            screen->draw(bubbleSortText);
+            screen->draw(insertionSortText);
+            screen->draw(heapSortText);
+            screen->display();
+        }
+
         void bubbleSort() {
-            if (!sorted && i >= vec.size() - 1 && j >= vec.size() - 1) {
-                sorted = true;
-                bubbleSortNow = false;
-                for (auto& rec : vec) {
-                    rec->setFillColor(sf::Color::Green);
-                }
-            }
-
-            if (!sorted) {
-                for (auto k = 0; k < vec.size() - left; k++) {
-                    vec[k]->setFillColor(sf::Color(102, 157, 178));
-                }
-            }
-
-            if (!sorted) {
-                vec[j]->setFillColor(sf::Color::Red);
-                vec[j + 1]->setFillColor(sf::Color::Red);
-                if (vec[j + 1]->getSize().y < vec[j]->getSize().y) {
-                    auto temp = vec[j]->getSize().y;
-                    vec[j]->setSize({vec[j]->getSize().x, vec[j + 1]->getSize().y});
-                    vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
-                    vec[j]->setFillColor(sf::Color::Green);                    vec[j + 1]->setFillColor(sf::Color::Green);
-                }
-                j++;
-                if (j == vec.size() - left - 1) {
-                    for (auto k = vec.size() - left - 1; k < vec.size(); k++) {
-                        vec[k]->setFillColor(sf::Color(204, 153, 255));
+            for (int i = 0; i < vec.size() - 1; i++) {
+                for (int j = 0; j < vec.size() - i - 1; j++) {
+                    screen->clear(sf::Color::White);
+                    vec[j + 1]->setFillColor(sf::Color::Red);
+                    vec[j]->setFillColor(sf::Color::Red);
+                    updateFront();
+                    if (vec[j + 1]->getSize().y < vec[j]->getSize().y) {
+                        auto temp = vec[j]->getSize().y;
+                        vec[j]->setSize({vec[j]->getSize().x, vec[j + 1]->getSize().y});
+                        vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
                     }
-                    j = 0;
-                    i++;
-                    left++;
+                    vec[j]->setFillColor(sf::Color(102, 157, 178));
+                    vec[j + 1]->setFillColor(sf::Color(102, 157, 178));
+                    screen->clear(sf::Color::White);
+                    updateFront();
+                }
+                for (auto k = vec.size() - i - 1; k < vec.size(); k++) {
+                    if (vec.size() - i - 1 == 1) {
+                        vec.front()->setFillColor(sf::Color(204, 153, 255));
+                    }
+                    vec[k]->setFillColor(sf::Color(204, 153, 255));
                 }
             }
         }
@@ -408,9 +424,10 @@ class Vis {
                      keyY = vec[i]->getSize().y;
                 }
                 a++;
-                if (j >= 0 && vec[j]->getSize().y > keyY) {
+                if (j >= 0 && vec[j]->getSize().y > keyY) {                    vec[j]->setFillColor(sf::Color::Red);
                     auto temp = vec[j]->getSize().y;
                     vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
+                    vec[j + 1]->setFillColor(sf::Color(204, 153, 255));
                     j--;
                 } else {
                     vec[j + 1]->setSize({vec[i]->getSize().x, keyY});
@@ -486,35 +503,30 @@ class Vis {
         }
 
         int partition(int low, int high) {
-            //auto pivot = vec[high].getSize().y;
             auto i = low - 1;
-            auto j = low;
-            //for (auto j = low; j <= high - 1; j++) {
-                if (j <= high - 1 && vec[j]->getSize().y < vec[high]->getSize().y) {
-             std::cout << j << '\n';
+            for (auto j = low; j <= high - 1; j++) {
+                if (vec[j]->getSize().y < vec[high]->getSize().y) {
                     i++;
                     auto temp = vec[i]->getSize().y;
                     vec[i]->setSize({vec[i]->getSize().x, vec[j]->getSize().y});
                     vec[j]->setSize({vec[j]->getSize().x, temp});
-                    j++;
-                } else {
-            //}
-            auto temp = vec[i + 1]->getSize().y;
-                    vec[i + 1]->setSize({vec[i + 1]->getSize().x, vec[high]->getSize().y});
-                    vec[high]->setSize({vec[high]->getSize().x, temp});
-                    return i + 1;
+                }
+                screen->clear(sf::Color::White);
+                updateFront();
             }
+            auto temp = vec[i + 1]->getSize().y;
+            vec[i + 1]->setSize({vec[i + 1]->getSize().x, vec[high]->getSize().y});
+            vec[high]->setSize({vec[high]->getSize().x, temp});
+            return i + 1;
         }
 
-        void qs(int low, int high) {
-            if (low < high) {
-                    std::cout << 544;
-                auto pi = partition(low, high);
-
-                qs(low, pi - 1);
-                qs(pi + 1, high);
+        void q(int low, int high) {
+            if (low >= high) {
+                return;
             }
-
+            auto pivot = partition(low, high);
+            q(low, pivot - 1);
+            q(pivot + 1, high);
         }
 
         std::unique_ptr<sf::RenderWindow> screen;
@@ -557,6 +569,11 @@ class Vis {
         float recSize = 8.f;
         int a = 1;
         int keyY;
+        int p = 0;
+        int n = 0;
+        int c = 0;
+        int pi = 0;
+        int ls = 1;
 };
 
 
