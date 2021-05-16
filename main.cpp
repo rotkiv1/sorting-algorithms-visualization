@@ -153,8 +153,6 @@ class Vis {
                     for (auto i = 0; i < determine; i++) {
                         temp.push_back(std::make_unique<sf::RectangleShape>());
                     }
-                    i = determine / 2 - 1;
-                    j = determine - 1;
                     auto moveDistance = 9.f;
                     auto move = 0.f;
                     if (determine > 175 && determine < 220) {
@@ -167,11 +165,11 @@ class Vis {
                         recSize = 4.f;
                         moveDistance = 5.f;
                     } else if (determine >= 300 && determine < 340) {
-                        recSize = 3;
-                        moveDistance = 4;
+                        recSize = 3.f;
+                        moveDistance = 4.f;
                     } else if (determine >= 340 && determine < 400) {
-                        recSize = 2.5;
-                        moveDistance = 3.5;
+                        recSize = 2.f;
+                        moveDistance = 3.f;
                     } else if (determine > 0 && determine <= 175) {
                         recSize = 8.f;
                         moveDistance = 9.f;
@@ -231,8 +229,8 @@ class Vis {
                     bubbleSortNow = true;
                     insertionSortNow = false;
                     heapSortNow = false;
-                    i = 0;
-                    j = 0;
+                   // i = 0;
+                   // j = 0;
                     bubbleSortText.setColor(sf::Color(97, 251, 100));
                     insertionSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color::White);
@@ -241,8 +239,8 @@ class Vis {
                     insertionSortText.setColor(sf::Color(97, 251, 100));
                     bubbleSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color::White);
-                    //i = 0;
-                    //j = 0;
+                   // i = 0;
+                    //j = i - 1;
                     bubbleSortNow = false;
                     insertionSortNow = true;
                     heapSortNow = false;
@@ -317,6 +315,14 @@ class Vis {
         void render() {
             screen->clear(sf::Color::White);
 
+            /*
+             *  dodac kolory do qs i heapsorta
+             *  zmienic selection sort i heapsort
+             *  sprawdzic czy dziala
+             *  sformatowac kod
+             *  dodac funkcje std::is_sorted() -> jesli true, kolor zielony
+             */
+
             if (!sorted) {
                 if (heapSortNow) {
                     heapSort();
@@ -325,21 +331,19 @@ class Vis {
                     bubbleSortNow = false;
                     sorted = true;
                 } else if (insertionSortNow) {
-                    q(0, vec.size() - 1);
+                    insertionSort();
                     insertionSortNow = false;
                     sorted = true;
                 }
             }
-
-
 
             for (auto i = 0; i < vec.size(); i++) {
                 screen->draw(*vec[i]);
             }
 
             using namespace std::literals;
-            //auto p = 0.0000000001ms;
-            //std::this_thread::sleep_for(p);
+            auto p = 0.001ms;
+            std::this_thread::sleep_for(p);
 
             screen->draw(background);
             screen->draw(textGenerate);
@@ -405,42 +409,27 @@ class Vis {
         }
 
         void insertionSort() {
-            if (!sorted && i >= vec.size()) {
-                sorted = true;
-                insertionSortNow = false;
-                for (auto& rec : vec) {
-                    rec->setFillColor(sf::Color::Green);
-                }
-            }
-
-            if (!sorted) {
-                for (auto k = left; k < vec.size(); k++) {
+            for (auto i = 1; i < vec.size(); i++) {
+               for (auto k = left; k < vec.size(); k++) {
                     vec[k]->setFillColor(sf::Color(102, 157, 178));
                 }
-            }
-
-            if (!sorted) {
-                if (a == 1) {
-                     keyY = vec[i]->getSize().y;
-                }
-                a++;
-                if (j >= 0 && vec[j]->getSize().y > keyY) {                    vec[j]->setFillColor(sf::Color::Red);
-                    auto temp = vec[j]->getSize().y;
-                    vec[j + 1]->setSize({vec[j + 1]->getSize().x, temp});
+                auto key = vec[i]->getSize().y;
+                auto j = i - 1;
+                while (j >= 0 && vec[j]->getSize().y > key) {
+                    vec[j]->setFillColor(sf::Color::Red);
+                    vec[j + 1]->setSize({vec[j + 1]->getSize().x, vec[j]->getSize().y});
                     vec[j + 1]->setFillColor(sf::Color(204, 153, 255));
                     j--;
-                } else {
-                    vec[j + 1]->setSize({vec[i]->getSize().x, keyY});
-                    i++;
-                    if (i < vec.size()) {
-                        keyY = vec[i]->getSize().y;
-                    }
-                    j = i - 1;
-                    left++;
-                    for (auto k = 0; k < left; k++) {
-                        vec[k]->setFillColor(sf::Color(204, 153, 255));
-                    }
+                    screen->clear(sf::Color::White);
+                    updateFront();
                 }
+                vec[j + 1]->setSize({vec[j + 1]->getSize().x, key});
+                left++;
+                for (auto k = 0; k < left; k++) {
+                    vec[k]->setFillColor(sf::Color(204, 153, 255));
+                }
+                screen->clear(sf::Color::White);
+                updateFront();
             }
         }
 
@@ -562,8 +551,8 @@ class Vis {
             heap sort, i = v.size() / 2  - 1, j = v.size() - 1
         */
 
-        int i;
-        int j;
+        int i = 0;
+        int j = 0;
         int left = 0;
         int count = 0;
         float recSize = 8.f;
