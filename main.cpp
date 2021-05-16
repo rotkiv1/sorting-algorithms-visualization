@@ -58,6 +58,12 @@ class Vis {
             heapSortText.setString("Heap  sort");
             heapSortText.setPosition(1025.f, 70.f);
 
+            quickSortText.setFont(font);
+            quickSortText.setCharacterSize(15);
+            quickSortText.setFillColor(sf::Color::White);
+            quickSortText.setString("Quick  sort");
+            quickSortText.setPosition(1165.f, 70.f);
+
             sorting.setFont(font);
             sorting.setCharacterSize(15);
             sorting.setPosition(1480.f, 70.f);
@@ -125,12 +131,9 @@ class Vis {
         void handleInput(sf::Keyboard::Key name) {
             if (isClicked) {
                 if (name == 8) {
-                        std::cout << size.back() << ' ';
-
                     if (!size.empty()) {
                         size.pop_back();
                         passed = true;
-                        std::cout << size << '\n';
                     }
                 } else {
                     auto curr = static_cast<char>(name);
@@ -208,7 +211,6 @@ class Vis {
                         rec->setFillColor(sf::Color(102, 157, 178));
                     }
                 } else if (sorted && mousePosition.x >= 1480.f && mousePosition.x <= 1580.f) {
-                    /* start sorting the array */
                     sorted = false;
                     sorting.setColor(sf::Color(255, 79, 89));
                     textGenerate.setColor(sf::Color(255, 79, 89));
@@ -223,37 +225,50 @@ class Vis {
                     if (heapSortNow) {
                         heapSortText.setColor(sf::Color(255, 79, 89));
                     }
+                    if (quickSortNow) {
+                        quickSortText.setColor(sf::Color(255, 79, 89));
+                    }
                     cursor.loadFromSystem(sf::Cursor::Arrow);
                     screen->setMouseCursor(cursor);
                 } else if (mousePosition.x >= 700.f && mousePosition.x <= 800.f && pressed) {
                     bubbleSortNow = true;
                     insertionSortNow = false;
                     heapSortNow = false;
-                   // i = 0;
-                   // j = 0;
+                    quickSortNow = false;
                     bubbleSortText.setColor(sf::Color(97, 251, 100));
                     insertionSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color::White);
+                    quickSortText.setColor(sf::Color::White);
                     left = 0;
                 } else if (mousePosition.x >= 850.f && mousePosition.x <= 955.f && pressed) {
                     insertionSortText.setColor(sf::Color(97, 251, 100));
                     bubbleSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color::White);
-                   // i = 0;
-                    //j = i - 1;
+                    quickSortText.setColor(sf::Color::White);
                     bubbleSortNow = false;
                     insertionSortNow = true;
                     heapSortNow = false;
+                    quickSortNow = false;
                     left = 0;
                 } else if (mousePosition.x >= 1025.f && mousePosition.x <= 1100.f && pressed) {
                     insertionSortText.setColor(sf::Color::White);
                     bubbleSortText.setColor(sf::Color::White);
+                    quickSortText.setColor(sf::Color::White);
                     heapSortText.setColor(sf::Color(97, 251, 100));
-                    //i = vec.size() / 2 - 1;
-                    //j = vec.size() - 1;
                     bubbleSortNow = false;
                     insertionSortNow = false;
                     heapSortNow = true;
+                    quickSortNow = false;
+                    left = 0;
+                } else if (mousePosition.x >= 1165.f && mousePosition.x <= 1230.f && pressed) {
+                    insertionSortText.setColor(sf::Color::White);
+                    bubbleSortText.setColor(sf::Color::White);
+                    quickSortText.setColor(sf::Color(97, 251, 100));
+                    heapSortText.setColor(sf::Color::White);
+                    bubbleSortNow = false;
+                    insertionSortNow = false;
+                    heapSortNow = false;
+                    quickSortNow = true;
                     left = 0;
                 }
             }
@@ -292,6 +307,11 @@ class Vis {
                 cursor.loadFromSystem(sf::Cursor::Hand);
                 screen->setMouseCursor(cursor);
                 heapSortText.setColor(sf::Color(97, 251, 100));
+            } else if (sorted && mousePosition.x >= 1165.f && mousePosition.x <= 1250.f &&
+                       mousePosition.y >= 70.f && mousePosition.y <= 100.f) {
+                cursor.loadFromSystem(sf::Cursor::Hand);
+                screen->setMouseCursor(cursor);
+                quickSortText.setColor(sf::Color(97, 251, 100));
             } else if (sorted) {
                 sorting.setFillColor(sf::Color::White);
                 textGenerate.setColor(sf::Color::White);
@@ -304,6 +324,9 @@ class Vis {
                 if (!heapSortNow) {
                     heapSortText.setColor(sf::Color::White);
                 }
+                if (!quickSortNow) {
+                    quickSortText.setColor(sf::Color::White);
+                }
                 moving.setFillColor(sf::Color::White);
                 newArray.setColor(sf::Color::White);
                 sizeOfArray.setColor(sf::Color::Black);
@@ -314,18 +337,12 @@ class Vis {
 
         void render() {
             screen->clear(sf::Color::White);
-
-            /*
-             *  dodac kolory do qs i heapsorta
-             *  zmienic selection sort i heapsort
-             *  sprawdzic czy dziala
-             *  sformatowac kod
-             *  dodac funkcje std::is_sorted() -> jesli true, kolor zielony
-             */
-
             if (!sorted) {
                 if (heapSortNow) {
                     heapSort();
+                    heapSortNow = false;
+                    sorted = true;
+                    std::cout << 5;
                 } else if (bubbleSortNow) {
                     bubbleSort();
                     bubbleSortNow = false;
@@ -334,30 +351,13 @@ class Vis {
                     insertionSort();
                     insertionSortNow = false;
                     sorted = true;
+                } else if (quickSortNow) {
+                    quickSort(0, vec.size() - 1);
+                    quickSortNow = false;
+                    sorted = true;
                 }
             }
-
-            for (auto i = 0; i < vec.size(); i++) {
-                screen->draw(*vec[i]);
-            }
-
-            using namespace std::literals;
-            auto p = 0.001ms;
-            std::this_thread::sleep_for(p);
-
-            screen->draw(background);
-            screen->draw(textGenerate);
-            screen->draw(sorting);
-            screen->draw(newArray);
-            screen->draw(moving);
-            screen->draw(button);
-            screen->draw(sizeOfArray);
-            screen->draw(s);
-            screen->draw(range);
-            screen->draw(bubbleSortText);
-            screen->draw(insertionSortText);
-            screen->draw(heapSortText);
-            screen->display();
+            updateFront();
         }
 
         void updateFront() {
@@ -365,7 +365,7 @@ class Vis {
                 screen->draw(*vec[i]);
             }
             using namespace std::literals;
-            auto p = 0.000000001ms;
+            auto p = 0.01ms;
             std::this_thread::sleep_for(p);
             screen->draw(background);
             screen->draw(textGenerate);
@@ -379,6 +379,7 @@ class Vis {
             screen->draw(bubbleSortText);
             screen->draw(insertionSortText);
             screen->draw(heapSortText);
+            screen->draw(quickSortText);
             screen->display();
         }
 
@@ -437,21 +438,21 @@ class Vis {
             auto largest = i;
             auto l = 2 * i + 1;
             auto r = 2 * i + 2;
-
             if (l < n && vec[l]->getSize().y > vec[largest]->getSize().y) {
                 largest = l;
             }
-
-            for (auto& rec : vec) {
-                rec->setFillColor(sf::Color(102, 157, 178));
+            for (int i = 0; i < vec.size() - left; i++) {
+                vec[i]->setFillColor(sf::Color(102, 157, 178));
             }
-
+            screen->clear(sf::Color::White);
+            updateFront();
             if (r < n && vec[r]->getSize().y > vec[largest]->getSize().y) {
                 largest = r;
             }
-
             vec[i]->setFillColor(sf::Color::Red);
             vec[largest]->setFillColor(sf::Color::Red);
+            screen->clear(sf::Color::White);
+            updateFront();
             if (largest != i) {
                 auto temp = vec[i]->getSize().y;
                 vec[i]->setSize({vec[i]->getSize().x, vec[largest]->getSize().y});
@@ -461,45 +462,39 @@ class Vis {
         }
 
         void heapSort() {
-            if (!sorted) {
-                if (i >= 0) {
-                    heapify(vec.size(), i);
+            for (int i = vec.size() / 2 - 1; i >= 0; i--) {
+                heapify(vec.size(), i);
+            }
+            for (int i = vec.size() - 1; i >= 0; i--) {
+                auto temp = vec[0]->getSize().y;
+                vec[0]->setSize({vec[0]->getSize().x, vec[i]->getSize().y});
+                vec[i]->setSize({vec[i]->getSize().x, temp});
+                heapify(i, 0);
+                for (auto k = vec.size() - left - 1; k < vec.size(); k++) {
+                    vec[k]->setFillColor(sf::Color(204, 153, 255));
+                }
+                left++;
+                screen->clear(sf::Color::White);
+                updateFront();
+            }
 
-                    i--;
-                } else {
-                    if (j >= 0) {
-                        auto temp = vec[0]->getSize().y;
-                        vec[0]->setSize({vec[0]->getSize().x, vec[j]->getSize().y});
-                        vec[j]->setSize({vec[j]->getSize().x, temp});
-                        heapify(j, 0);
-                        for (auto k = vec.size() - left - 1; k < vec.size(); k++) {
-                            vec[k]->setFillColor(sf::Color(204, 153, 255));
-                        }
-                        j--;
-                        left++;
-                    } else {
-                        sorted = true;
-                    }
-                }
-            }
-            if (sorted) {
-                heapSortNow = false;
-                for (auto& rec : vec) {
-                    rec->setFillColor(sf::Color::Green);
-                }
-                heapSortNow = false;
-            }
         }
 
         int partition(int low, int high) {
             auto i = low - 1;
             for (auto j = low; j <= high - 1; j++) {
+                vec[j]->setFillColor(sf::Color::Red);
+                vec[high]->setFillColor(sf::Color::Red);
+                screen->clear(sf::Color::White);
+                updateFront();
                 if (vec[j]->getSize().y < vec[high]->getSize().y) {
                     i++;
                     auto temp = vec[i]->getSize().y;
                     vec[i]->setSize({vec[i]->getSize().x, vec[j]->getSize().y});
                     vec[j]->setSize({vec[j]->getSize().x, temp});
                 }
+                vec[j]->setFillColor(sf::Color(102, 157, 178));
+                vec[high]->setFillColor(sf::Color(102, 157, 178));
                 screen->clear(sf::Color::White);
                 updateFront();
             }
@@ -509,13 +504,18 @@ class Vis {
             return i + 1;
         }
 
-        void q(int low, int high) {
+        void quickSort(int low, int high) {
             if (low >= high) {
                 return;
             }
             auto pivot = partition(low, high);
-            q(low, pivot - 1);
-            q(pivot + 1, high);
+            quickSort(low, pivot - 1);
+            quickSort(pivot + 1, high);
+            for (auto i = low; i <= high; i++) {
+                vec[i]->setFillColor(sf::Color(204, 153, 255));
+            }
+            screen->clear(sf::Color::White);
+            updateFront();
         }
 
         std::unique_ptr<sf::RenderWindow> screen;
@@ -526,7 +526,7 @@ class Vis {
         sf::Texture textureBackground;
         sf::Font font;
         sf::Text textGenerate, sorting, newArray, bubbleSortText,
-                 insertionSortText, heapSortText;
+                 insertionSortText, heapSortText, quickSortText;
         sf::RectangleShape s1, moving;
         sf::Cursor cursor;
         sf::CircleShape button;
@@ -543,6 +543,7 @@ class Vis {
         bool bubbleSortNow = false;
         bool insertionSortNow = false;
         bool heapSortNow = false;
+        bool quickSortNow = false;
         bool in = true;
 
         /*
@@ -551,8 +552,8 @@ class Vis {
             heap sort, i = v.size() / 2  - 1, j = v.size() - 1
         */
 
-        int i = 0;
-        int j = 0;
+        //int i = 0;
+        //int j = 0;
         int left = 0;
         int count = 0;
         float recSize = 8.f;
