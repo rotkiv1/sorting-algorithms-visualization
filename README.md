@@ -16,6 +16,10 @@ and has few options.\
 - ## Insertion sort
 ![ezgif com-gif-maker (4)](https://user-images.githubusercontent.com/83311097/118644110-b4912a80-b7dd-11eb-8077-224065f562f1.gif)
 
+- ## Heap sort
+![ezgif com-gif-maker (5)](https://user-images.githubusercontent.com/83311097/118645888-cd024480-b7df-11eb-8220-fb5a5d79434c.gif)
+
+
 
 
 
