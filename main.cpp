@@ -19,8 +19,9 @@ class Vis {
 
     public:
 
-        Vis() :
-        screen(std::make_shared<sf::RenderWindow>(sf::VideoMode(1600, 1000), "")) {
+        Vis()
+        : screen(std::make_shared<sf::RenderWindow>(sf::VideoMode(1600, 1000), "")) {
+
             font.loadFromFile("font.ttf");
 
             s.setPosition(460.f, 73.5);
@@ -363,24 +364,27 @@ class Vis {
                 if (heapSortNow) {
                     HeapSort h;
                     h.heapSort(screen, vec,
-                               std::bind(&Vis::updateFront, this), left);
+                               [this](){ updateFront(); },
+                               left);
                     heapSortNow = false;
                     sorted = true;
                 } else if (bubbleSortNow) {
                     BubbleSort b;
                     b.bubbleSort(screen, vec,
-                                 std::bind(&Vis::updateFront, this));
+                                 [this](){ updateFront(); });
                     bubbleSortNow = false;
                     sorted = true;
                 } else if (insertionSortNow) {
                     InsertionSort i;
                     i.insertionSort(screen, vec,
-                                    std::bind(&Vis::updateFront, this), left);
+                                    [this](){ updateFront(); },
+                                    left);
                     insertionSortNow = false;
                     sorted = true;
                 } else if (quickSortNow) {
                     QuickSort q;
-                    q.quickSort(screen, vec, std::bind(&Vis::updateFront, this),
+                    q.quickSort(screen, vec,
+                                [this](){ updateFront(); },
                                 0, vec.size() - 1);
                     quickSortNow = false;
                     sorted = true;
