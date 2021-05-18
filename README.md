@@ -13,6 +13,9 @@ and has few options.\
 - ## Bubble sort
 ![ezgif com-gif-maker (3)](https://user-images.githubusercontent.com/83311097/118409349-5142b380-b68a-11eb-921b-0aaf3ec43bb5.gif)
 
+- ## Insertion sort
+![ezgif com-gif-maker (4)](https://user-images.githubusercontent.com/83311097/118644110-b4912a80-b7dd-11eb-8077-224065f562f1.gif)
+
 
 
 
