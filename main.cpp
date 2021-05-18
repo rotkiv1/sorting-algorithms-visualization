@@ -1,25 +1,20 @@
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
 
 #include "BubbleSort.h"
 #include "HeapSort.h"
 #include "InsertionSort.h"
 #include "QuickSort.h"
+#include "Gui.h"
 
-#include <iostream>
-#include <chrono>
-#include <random>
-#include <thread>
-#include <memory>
-
-
+/*
 auto generator = std::default_random_engine(std::random_device()());
 std::uniform_int_distribution<int> distribution(50, 750);
 
-class Vis {
+class Gui {
 
     public:
 
-        Vis()
+        Gui()
         : screen(std::make_shared<sf::RenderWindow>(sf::VideoMode(1600, 1000), "")) {
 
             font.loadFromFile("font.ttf");
@@ -423,8 +418,8 @@ class Vis {
 
 };
 
-
+*/
 int main() {
-    Vis v;
-    v.run();
+    Gui g;
+    g.run();
 }
