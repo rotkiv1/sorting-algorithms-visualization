@@ -407,14 +407,12 @@ class Vis {
 
         bool sorted = true;
         bool isPressed = false;
-        //bool was = false;
         bool isClicked = false;
         bool passed = false;
         bool bubbleSortNow = false;
         bool insertionSortNow = false;
         bool heapSortNow = false;
         bool quickSortNow = false;
-        //bool in = true;
 
         int left = 0;
         float recSize = 8.f;
