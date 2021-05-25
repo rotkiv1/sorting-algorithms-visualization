@@ -1,6 +1,6 @@
 # Sorting Visualizer
 I built this programm because I wanted to see how certain sorting algorithms works. The programm is very simple to use
-and has few options.\
+and has few options.\\
 (Warning, animations on Github as GIF, are not as smooth as in real programm)
 
 # Generate unsorted array with certain size
